@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="signup.html">Sign Up</a></li>
+        <li><a href="login.html">Sign In</a></li>
+    </ul>
+</nav>
+
+<header>
+    <h1>Create an Account</h1>
+</header>
+<main>
+    <form id="signup-form">
+        <label for="name">Full Name:</label>
+        <input type="text" id="signup-name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="signup-email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="signup-password" required>
+
+        <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Sign in here</a></p>
+</main>
+<script>
+    document.getElementById("signup-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const name = document.getElementById("signup-name").value;
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
+
+        // Save to localStorage for demo
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("userPassword", password);
+
+        alert("Sign up successful! Now login.");
+        window.location.href = "login.html";
+    });
+</script>
+</body>
+</html>

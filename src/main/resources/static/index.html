@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>College Bus Timings</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<header>
+    <h1>College Bus Timings & Routes</h1>
+</header>
+<main>
+    <table id="bus-timings">
+        <thead>
+        <tr>
+            <th>Route</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Bus timings will be populated here -->
+        </tbody>
+    </table>
+</main>
+
+<script>
+    fetch('/api/buses')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch buses');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const tbody = document.querySelector('#bus-timings tbody');
+            data.forEach(bus => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${bus.route}</td>
+                    <td>${bus.departure}</td>
+                    <td>${bus.arrival}</td>
+                    <td>${bus.status}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching buses:', error);
+        });
+</script>
+<script src="script.js"></script>
+</body>
+</html>
