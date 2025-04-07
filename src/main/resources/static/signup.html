@@ -40,12 +40,44 @@
         const email = document.getElementById("signup-email").value;
         const password = document.getElementById("signup-password").value;
 
-        // Save to localStorage for demo
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("userPassword", password);
+        const user = {
+            name: name,
+            email: email,
+            password: password
+        };
 
-        alert("Sign up successful! Now login.");
-        window.location.href = "login.html";
+        fetch("http://localhost:8080/api/users/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(user)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to sign up");
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert("Signup successful! Now login.");
+
+            // Save to localStorage for demo
+            localStorage.setItem("userEmail", email);
+            localStorage.setItem("userPassword", password);
+
+            window.location.href = "login.html";
+        })
+        .catch(error => {
+            console.error("Signup error:", error);
+            alert("Signup failed. Please try again.");
+        });
+
+
+
+
+<!--        alert("Sign up successful! Now login.");-->
+<!--        window.location.href = "login.html";-->
     });
 </script>
 </body>
