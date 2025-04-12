@@ -1,6 +1,7 @@
 package com.project.dbms_mini_project_backend.controller;
 
 import com.project.dbms_mini_project_backend.entity.Bus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/buses")
+@CrossOrigin(origins = "*")
 public class BusController {
 
     private final BusRepository busRepository;

@@ -8,6 +8,7 @@ import com.project.dbms_mini_project_backend.repository.UserRepository;
 import com.project.dbms_mini_project_backend.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -38,5 +39,12 @@ public class UserController {
     public User login(@RequestBody User user) {
         return userService.loginUser(user.getEmail(), user.getPassword());
     }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 
 }
