@@ -9,8 +9,39 @@
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="dashboard.html" onclick="goToDashboard()">User Dashboard</a></li>
-            <li><a href="admin.html">Admin Panel</a></li>
+            <li><a href="admin.html" onclick="checkAdminAccess()">Admin Panel</a></li>
         </ul>
     </nav>
+
+    <script>
+        function checkAdminAccess() {
+            const email = localStorage.getItem("userEmail");
+            if (!email) {
+                alert("Please login first.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            fetch(`http://localhost:8080/api/users/email/${email}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("User not found");
+                    return response.json();
+                })
+                .then(user => {
+                    if (user.role === "ADMIN") {
+                        window.location.href = "admin.html";
+                    } else {
+                        alert("Not an admin: login as admin");
+                    }
+                })
+                .catch(error => {
+                    alert("Unauthorized access.");
+                    console.error("Error:", error);
+                    window.location.href = "login.html";
+                });
+        }
+    </script>
+
+
 </body>
 </html>

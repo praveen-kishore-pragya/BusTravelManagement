@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<header>
+    <h1>Admin Panel - Manage Bus Routes</h1>
+    <button onclick="logout()" style="float:right;">Logout</button>
+</header>
+
+<main>
+    <p id="admin-warning" style="color:red;"></p>
+    <table id="bus-requests" border="1" style="width:100%;">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Route</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Filled dynamically -->
+        </tbody>
+    </table>
+</main>
+
+<script>
+    const email = localStorage.getItem("userEmail");
+
+    if (!email) {
+        alert("Please log in first.");
+        window.location.href = "login.html";
+    } else {
+        fetch(`http://localhost:8080/api/users/email/${email}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("User not found");
+                }
+                return response.json();
+            })
+            .then(user => {
+                if (user.role !== "ADMIN") {
+                    alert("Not an admin: login as admin");
+                    window.location.href = "login.html";
+                } else {
+                    loadBusData();
+                }
+            })
+            .catch(error => {
+                alert("Unauthorized access.");
+                window.location.href = "login.html";
+            });
+    }
+
+    function loadBusData() {
+        fetch("http://localhost:8080/api/buses") // Or your actual endpoint
+            .then(response => response.json())
+            .then(buses => {
+                const tbody = document.querySelector("#bus-requests tbody");
+                buses.forEach(bus => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${bus.id}</td>
+                        <td>${bus.route}</td>
+                        <td>${bus.departureTime}</td>
+                        <td>${bus.arrivalTime}</td>
+                        <td>${bus.status}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(err => {
+                console.error("Failed to load buses:", err);
+                document.getElementById("admin-warning").textContent = "Could not load data: " + err.message;
+            });
+
+    }
+
+    function logout() {
+        localStorage.clear();
+        alert("Logged out successfully.");
+        window.location.href = "login.html";
+    }
+</script>
+
+<script src="script.js"></script>
+</body>
+</html>
