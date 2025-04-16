@@ -25,6 +25,7 @@
             <th>Departure</th>
             <th>Arrival</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -42,9 +43,7 @@
     } else {
         fetch(`http://localhost:8080/api/users/email/${email}`)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error("User not found");
-                }
+                if (!response.ok) throw new Error("User not found");
                 return response.json();
             })
             .then(user => {
@@ -55,40 +54,96 @@
                     loadBusData();
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 alert("Unauthorized access.");
                 window.location.href = "login.html";
             });
     }
 
+    let allBusData = [];
+
     function loadBusData() {
-        fetch("http://localhost:8080/api/buses") // Or your actual endpoint
+        fetch("http://localhost:8080/api/buses")
             .then(response => response.json())
             .then(buses => {
+                allBusData = buses;
                 const tbody = document.querySelector("#bus-requests tbody");
+                tbody.innerHTML = "";
+
                 buses.forEach(bus => {
                     const row = document.createElement("tr");
+                    row.setAttribute("id", `row-${bus.id}`);
                     row.innerHTML = `
                         <td>${bus.id}</td>
-                        <td>${bus.route}</td>
-                        <td>${bus.departureTime}</td>
-                        <td>${bus.arrivalTime}</td>
+                        <td><input type="text" id="route-${bus.id}" value="${bus.route}" disabled></td>
+                        <td><input type="time" id="departure-${bus.id}" value="${bus.departureTime}" disabled></td>
+                        <td><input type="time" id="arrival-${bus.id}" value="${bus.arrivalTime}" disabled></td>
                         <td>${bus.status}</td>
+                        <td>
+                            <button onclick="editBus(${bus.id})" id="edit-btn-${bus.id}">Edit</button>
+                            <button onclick="saveBus(${bus.id})" id="save-btn-${bus.id}" style="display:none;">Save</button>
+                        </td>
                     `;
                     tbody.appendChild(row);
                 });
             })
             .catch(err => {
-                console.error("Failed to load buses:", err);
                 document.getElementById("admin-warning").textContent = "Could not load data: " + err.message;
             });
-
     }
 
     function logout() {
         localStorage.clear();
         alert("Logged out successfully.");
         window.location.href = "login.html";
+    }
+
+    function editBus(id) {
+        document.getElementById(`route-${id}`).disabled = false;
+        document.getElementById(`departure-${id}`).disabled = false;
+        document.getElementById(`arrival-${id}`).disabled = false;
+        document.getElementById(`edit-btn-${id}`).style.display = "none";
+        document.getElementById(`save-btn-${id}`).style.display = "inline-block";
+    }
+
+    function saveBus(id) {
+        const route = document.getElementById(`route-${id}`).value;
+        const departureTime = document.getElementById(`departure-${id}`).value;
+        const arrivalTime = document.getElementById(`arrival-${id}`).value;
+
+        if (departureTime >= arrivalTime) {
+            alert("Departure time must be earlier than arrival time.");
+            return;
+        }
+
+        const original = allBusData.find(bus => bus.id === id);
+
+        const updatedBus = {
+            id: original.id,
+            route: route,
+            departureTime: departureTime,
+            arrivalTime: arrivalTime,
+            status: original.status
+        };
+
+        fetch(`http://localhost:8080/api/buses/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedBus)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to update bus");
+            return response.json();
+        })
+        .then(() => {
+            alert("Bus updated successfully.");
+            loadBusData();
+        })
+        .catch(err => {
+            alert("Error updating bus: " + err.message);
+        });
     }
 </script>
 

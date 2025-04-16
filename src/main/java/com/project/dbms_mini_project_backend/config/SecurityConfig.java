@@ -13,7 +13,7 @@ public class SecurityConfig{
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**") // Adjust path to match your APIs
+                registry.addMapping("") // Adjust path to match your APIs
                         .allowedOrigins("http://localhost:63342") // Update to your frontend origin
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
