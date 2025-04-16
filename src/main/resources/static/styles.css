@@ -111,3 +111,8 @@ a {
 a:hover {
     color: #66bb6a;
 }
+
+.hidden {
+    display: none;
+}
+
